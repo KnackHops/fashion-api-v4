@@ -95,6 +95,7 @@ model Admin {
   name      String
   email     String   @unique
   password  String
+  status    Int      @default(1)
 }
 
 model User {
@@ -112,6 +113,7 @@ model User {
   shoulder       Float?
   torsoLength    Float?
   waist          Float?
+  status         Int              @default(1)
   FavoriteItem   FavoriteItem[]
   FavoriteOutfit FavoriteOutfit[]
 }
@@ -125,6 +127,7 @@ enum EFit {
 enum EGender {
   MALE
   FEMALE
+  OTHER
 }
 
 enum ESeason {
