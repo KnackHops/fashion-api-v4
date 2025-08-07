@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../generated/prisma"
+  previewFeatures = ["typedSql", "fullTextSearchPostgres"]
 }
 
 datasource db {
@@ -8,10 +9,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Admin {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  name      String
+  email     String   @unique
+  password  String
+  status    Int      @default(1)
+}
+
 model Category {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt()
   name      String
   Item      Item[]
 }
@@ -35,26 +46,28 @@ model FavoriteOutfit {
 model Item {
   id                    Int            @id @default(autoincrement())
   createdAt             DateTime       @default(now())
-  updatedAt             DateTime
+  updatedAt             DateTime       @updatedAt()
   materialId            Int
+  categoryId            Int
+  userId                Int
   name                  String
   sku                   String?
   brand                 String
-  categoryId            Int
   fit                   EFit
   color                 String
   imageUrl              String?
   additionalDescription String?
   FavoriteItem          FavoriteItem[]
-  Category              Category       @relation(fields: [categoryId], references: [id])
   Material              Material       @relation(fields: [materialId], references: [id])
+  Category              Category       @relation(fields: [categoryId], references: [id])
+  User                  User           @relation(fields: [userId], references: [id])
   OutfitItem            OutfitItem[]
 }
 
 model Material {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt()
   name      String
   Item      Item[]
 }
@@ -62,7 +75,7 @@ model Material {
 model Outfit {
   id             Int              @id @default(autoincrement())
   createdAt      DateTime         @default(now())
-  updatedAt      DateTime
+  updatedAt      DateTime         @updatedAt()
   name           String
   styleId        Int
   season         ESeason
@@ -83,39 +96,30 @@ model OutfitItem {
 model Style {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt()
   name      String
   Outfit    Outfit[]
-}
-
-model Admin {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime
-  name      String
-  email     String   @unique
-  password  String
-  status    Int      @default(1)
 }
 
 model User {
   id             Int              @id @default(autoincrement())
   createdAt      DateTime         @default(now())
-  updatedAt      DateTime
+  updatedAt      DateTime         @updatedAt()
   name           String
   email          String           @unique
   profileImage   String?
   password       String
-  age            Int
-  gender         EGender
+  age            Int?
+  gender         EGender?
   height         Float?
   chest          Float?
   shoulder       Float?
   torsoLength    Float?
   waist          Float?
-  status         Int              @default(1)
   FavoriteItem   FavoriteItem[]
   FavoriteOutfit FavoriteOutfit[]
+  status         Int              @default(1)
+  Item           Item[]
 }
 
 enum EFit {
